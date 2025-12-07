@@ -33,7 +33,31 @@ app.get('/employee', async (req, res) => {
     }
 });
 
+// Endpoint: GET /employee/search?keyWord=...
+// Ví dụ gọi: http://localhost:3001/employee/search?keyWord=nv001
+app.get('/employee/search', async(req, res) => {
+    try {
+        const keyWord = req.query.keyWord;
+        if(!keyWord){
+            return res.status(400).json({ message: 'Vui lòng nhập từ khóa' });
+        }
+
+        const result = await Employee.find({
+            $or: [
+                { TenNhanVien: { $regex: keyWord, $options: 'i' } },
+                { MaNhanVien: { $regex: keyWord, $options: 'i' } }
+            ]
+        });
+        res.status(200).json(result);
+
+    } catch (error) {
+        console.error('Lỗi tìm kiếm', error);
+        res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+});
+
 app.listen(PORT, () => {
-    console.log(`Server đang chạy tại http://localhost:${PORT}`);
+    console.log(`Server đang chạy tại http://localhost:${PORT}/employee`);
+    console.log(`Để tìm kiếm nhân viên http://localhost:${PORT}/employee/search?keyWord=nv001`);
 });
 
