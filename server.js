@@ -56,6 +56,29 @@ app.get('/employee/search', async(req, res) => {
     }
 });
 
+// Endpoint: POST /employee
+// Chức năng: Thêm nhân viên mới
+app.post('/employee', async (req, res) => {
+    try {
+        const newEmployee = new Employee(req.body);
+        await newEmployee.save();
+        res.status(201).json({ message: "Thêm nhân viên mới thành công" });
+    } catch (error) {
+        // Kiểm tra lỗi trùng lặp (Mã lỗi 11000 trong MongoDB)
+        if(error.code === 11000){
+            const field = Object.keys(error.keyPattern)[0];
+            let message = "Thông tin đã tồn tại";
+            if(field === 'MaNhanVien') message = "Mã nhân viên đã tồn tại";
+            if(field === 'SoDienThoai') message = "Số điện thoại đã tồn tại";
+            if(field === 'Email') message = "Email đã tồn tại";
+
+            return res.status(400).json({ message });
+        }
+    }
+    console.error("Lỗi thêm nhân viên mới", error);
+    res.status(500).json({ message: "Lỗi máy chủ không thể thêm nhân viên mới"});
+});
+
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}/employee`);
     console.log(`Để tìm kiếm nhân viên http://localhost:${PORT}/employee/search?keyWord=nv001`);
