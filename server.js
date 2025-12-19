@@ -71,8 +71,7 @@ app.post('/employee', async (req, res) => {
             if(field === 'MaNhanVien') message = "Mã nhân viên đã tồn tại";
             if(field === 'SoDienThoai') message = "Số điện thoại đã tồn tại";
             if(field === 'Email') message = "Email đã tồn tại";
-
-            return res.status(400).json({ message });
+            return res.status(400).json({ message: message });
         }
     }
     console.error("Lỗi thêm nhân viên mới", error);
