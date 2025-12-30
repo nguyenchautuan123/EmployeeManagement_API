@@ -78,6 +78,24 @@ app.post('/employee', async (req, res) => {
     res.status(500).json({ message: "Lỗi máy chủ không thể thêm nhân viên mới"});
 });
 
+// Endpoint: DELETE /employee/:id
+// Chức năng: Xóa nhân viên theo ID
+app.delete('/employee/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const delateEmployee = await Employee.findByIdAndDelete(id);
+
+        if(!delateEmployee){
+            return res.status(404).json({ message: "Không thể tìm thấy nhân viên để xóa"});
+        }
+
+        res.status(200).json({ message: "Xóa thành công"});
+    } catch (error) {
+        console.error("Lỗi khi xóa", error);
+        res.status(500).json({ message: "Lỗi máy chủ khi xóa nhân viên"});
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}/employee`);
     console.log(`Để tìm kiếm nhân viên http://localhost:${PORT}/employee/search?keyWord=nv001`);
