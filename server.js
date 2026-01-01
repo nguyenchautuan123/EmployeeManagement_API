@@ -96,6 +96,29 @@ app.delete('/employee/:id', async (req, res) => {
     }
 });
 
+// Endpoint: PUT /employee/:id
+// Chức năng: Cập nhật thông tin nhân viên
+app.put('/employee/:id', async (req, res) => {
+    try {
+        const { id } = req.params; // Lấy ID từ URL
+        const data = req.body; // Lấy dữ liệu mới từ App gửi lên
+
+        const updateEmployee = await Employee.findByIdAndUpdate(id, data, { new: true});
+
+        if(!updateEmployee){
+            return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+        }
+
+        res.json(updateEmployee);
+
+    } catch (error) {
+        if(error.code === 11000){
+            return res.status(400).json({ message: "Thông tin bị trùng, vui lòng kiếm tra lại" });
+        }
+        res.status(500).json({ message: "Lỗi máy chủ !!!"});
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}/employee`);
     console.log(`Để tìm kiếm nhân viên http://localhost:${PORT}/employee/search?keyWord=nv001`);
